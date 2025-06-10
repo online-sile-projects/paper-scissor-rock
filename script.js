@@ -16,6 +16,7 @@ const modelUrls = {
     chatgpt: 'https://chatgpt.com/',
     gemini: 'https://gemini.google.com/',
     deepseek: 'https://chat.deepseek.com/',
+    perplexity: 'https://www.perplexity.ai/',
     other: '#'
 };
 
