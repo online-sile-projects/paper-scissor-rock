@@ -123,11 +123,14 @@ function generateAIPrompt(player, opponent, gameHistory) {
     const historyText = formatGameHistory(gameHistory);
     const opponentAnalysis = analyzeOpponentPattern(gameHistory, opponent.name);
     
+    // 確保 gameMode 存在，如果不存在則使用默認值
+    const currentGameMode = gameState.gameMode || { wins: 3, total: 5, name: '五戰三勝' };
+    
     return `你是 ${player.name}，使用 ${player.model} 模型，採用 ${player.strategy}。
 
 🎮 遊戲狀況：
 - 對手：${opponent.name} (${opponent.model}，${opponent.strategy})
-- 比賽制度：${gameState.gameMode.name}
+- 比賽制度：${currentGameMode.name}
 - 目前比分：你 ${player.wins} : ${opponent.wins} 對手
 - 當前：第 ${gameState.currentRound} 回合
 
@@ -342,7 +345,8 @@ function processRound() {
     showRoundResult(roundResult);
     
     // 檢查遊戲是否結束
-    if (gameState.playerA.wins >= gameState.gameMode.wins || gameState.playerB.wins >= gameState.gameMode.wins) {
+    const currentGameMode = gameState.gameMode || { wins: 3, total: 5, name: '五戰三勝' };
+    if (gameState.playerA.wins >= currentGameMode.wins || gameState.playerB.wins >= currentGameMode.wins) {
         endGame();
     }
 }
@@ -385,7 +389,8 @@ function nextRound() {
 
 // 結束遊戲
 function endGame() {
-    const winner = gameState.playerA.wins >= gameState.gameMode.wins ? gameState.playerA.name : gameState.playerB.name;
+    const currentGameMode = gameState.gameMode || { wins: 3, total: 5, name: '五戰三勝' };
+    const winner = gameState.playerA.wins >= currentGameMode.wins ? gameState.playerA.name : gameState.playerB.name;
     
     // 記錄完整比賽
     const matchRecord = {
@@ -396,14 +401,14 @@ function endGame() {
         rounds: [...gameState.rounds],
         winner: winner,
         finalScore: `${gameState.playerA.wins}:${gameState.playerB.wins}`,
-        gameMode: gameState.gameMode
+        gameMode: currentGameMode
     };
     
     gameState.gameHistory.push(matchRecord);
     saveGameHistory();
     
     // 更新UI
-    document.getElementById('final-winner').textContent = `🏆 ${winner} 獲得勝利！\n${gameState.gameMode.name}\n最終比分：${gameState.playerA.wins} : ${gameState.playerB.wins}`;
+    document.getElementById('final-winner').textContent = `🏆 ${winner} 獲得勝利！\n${currentGameMode.name}\n最終比分：${gameState.playerA.wins} : ${gameState.playerB.wins}`;
     document.getElementById('game-over').classList.remove('hidden');
 }
 
